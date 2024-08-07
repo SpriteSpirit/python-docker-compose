@@ -6,7 +6,7 @@ from lms.serializers import CourseSerializer, LessonSerializer
 
 # ViewSet для курса
 class CourseViewSet(viewsets.ModelViewSet):
-    """ """
+    """ API endpoint для курсов """
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
 
