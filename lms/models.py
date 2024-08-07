@@ -1,13 +1,15 @@
 from django.db import models
 
-# Create your models here.
+# поле становится необязательным как на уровне базы данных, так и на уровне формы
 NULLABLE = {'null': True, 'blank': True}
 
 
 class Course(models.Model):
+    objects = models.Manager()
+
     title = models.CharField(max_length=100, verbose_name='Название курса')
     preview = models.ImageField(upload_to='courses/preview/', verbose_name='Изображение', **NULLABLE)
-    description = models.TextField(verbose_name='Описание')
+    description = models.TextField(verbose_name='Описание', **NULLABLE)
 
     class Meta:
         verbose_name = 'Курс'
@@ -19,7 +21,7 @@ class Course(models.Model):
 
 class Lesson(models.Model):
     title = models.CharField(max_length=100, verbose_name='Название урока')
-    description = models.TextField(verbose_name='Описание')
+    description = models.TextField(verbose_name='Описание', **NULLABLE)
     preview = models.ImageField(upload_to='lessons/preview/', verbose_name='Изображение')
     video_url = models.URLField(verbose_name='Ссылка на видео')
 
