@@ -24,3 +24,8 @@ class UserRetrieveAPIView(generics.RetrieveAPIView):
     """ Получение информации о конкретном пользователе """
     serializer_class = UserSerializer
     queryset = User.objects.all()
+
+
+class UserDestroyAPIView(generics.DestroyAPIView):
+    """ Удаление пользователя """
+    queryset = User.objects.all()
