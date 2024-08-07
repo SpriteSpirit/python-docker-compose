@@ -6,7 +6,7 @@ NULLABLE = {'null': True, 'blank': True}
 
 class Course(models.Model):
     title = models.CharField(max_length=100, verbose_name='Название курса')
-    preview = models.ImageField(upload_to='courses/preview/', **NULLABLE)
+    preview = models.ImageField(upload_to='courses/preview/', verbose_name='Изображение', **NULLABLE)
     description = models.TextField(verbose_name='Описание')
 
     class Meta:
@@ -20,7 +20,7 @@ class Course(models.Model):
 class Lesson(models.Model):
     title = models.CharField(max_length=100, verbose_name='Название урока')
     description = models.TextField(verbose_name='Описание')
-    preview = models.ImageField(upload_to='lessons/preview/')
+    preview = models.ImageField(upload_to='lessons/preview/', verbose_name='Изображение')
     video_url = models.URLField(verbose_name='Ссылка на видео')
 
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='lessons')

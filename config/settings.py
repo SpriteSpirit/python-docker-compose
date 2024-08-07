@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "phonenumber_field",
 
     'users',
+    'lms',
 ]
 
 MIDDLEWARE = [
