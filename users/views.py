@@ -18,3 +18,9 @@ class UserListAPIView(generics.ListAPIView):
     """ Список всех пользователей """
     serializer_class = UserSerializer
     queryset = User.objects.all()
+
+
+class UserRetrieveAPIView(generics.RetrieveAPIView):
+    """ Получение информации о конкретном пользователе """
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
