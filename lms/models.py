@@ -5,6 +5,7 @@ NULLABLE = {'null': True, 'blank': True}
 
 
 class Course(models.Model):
+    """ Курс """
     objects = models.Manager()
 
     title = models.CharField(max_length=100, verbose_name='Название курса')
@@ -20,6 +21,7 @@ class Course(models.Model):
 
 
 class Lesson(models.Model):
+    """ Урок """
     objects = models.Manager()
 
     title = models.CharField(max_length=100, verbose_name='Название урока')
