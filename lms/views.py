@@ -27,3 +27,9 @@ class LessonRetrieveAPIView(generics.RetrieveAPIView):
     """ Просмотр одного урока """
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+
+
+class LessonUpdateAPIView(generics.UpdateAPIView):
+    """ Редактирование урока """
+    serializer_class = LessonSerializer
+    queryset = Lesson.objects.all()
