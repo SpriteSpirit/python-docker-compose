@@ -33,3 +33,8 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
     """ Редактирование урока """
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
+
+
+class LessonDestroyAPIView(generics.DestroyAPIView):
+    """ Удаление урока """
+    queryset = Lesson.objects.all()
