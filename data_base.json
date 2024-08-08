@@ -417,6 +417,51 @@
     }
 },
 {
+    "model": "users.user",
+    "pk": 2,
+    "fields": {
+        "password": "2277",
+        "last_login": null,
+        "is_superuser": false,
+        "last_name": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2024-08-08T19:56:49.187Z",
+        "first_name": "Киану Ривз",
+        "email": "keanu_reaves@gmail.com",
+        "phone": "+7",
+        "country": "RU",
+        "avatar": "",
+        "about_message": null,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "users.payment",
+    "pk": 1,
+    "fields": {
+        "user": 1,
+        "payment_date": "2024-08-08T19:54:11.278Z",
+        "course": 1,
+        "lesson": null,
+        "amount": "100000.00",
+        "payment_method": "card"
+    }
+},
+{
+    "model": "users.payment",
+    "pk": 2,
+    "fields": {
+        "user": 2,
+        "payment_date": "2024-08-08T19:57:27.302Z",
+        "course": 1,
+        "lesson": null,
+        "amount": "95000.00",
+        "payment_method": "cash"
+    }
+},
+{
     "model": "lms.course",
     "pk": 1,
     "fields": {
