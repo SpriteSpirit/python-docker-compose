@@ -19,6 +19,3 @@ class CourseSerializer(serializers.ModelSerializer):
 
     def get_lesson_count(self, instance):
         return instance.lessons.count()
-
-
-
