@@ -12,7 +12,7 @@ class Command(BaseCommand):
     def json_read_payments(json_file_name):
         payments = []
 
-        # Здесь мы получаем данные из фикстур с оплатами
+        # Здесь мы получаем данные из фикстур с платежами
         with open(json_file_name, 'r', encoding='utf-8') as file:
             data = json.load(file)
 
@@ -24,7 +24,7 @@ class Command(BaseCommand):
         return payments
 
     def handle(self, *args, **options):
-        # Удаление всех оплат
+        # Удаление всех платежей
         Payment.objects.all().delete()
         # Имя JSON файла
         json_name = "data_base.json"

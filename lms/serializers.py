@@ -3,6 +3,7 @@ from lms.models import Course, Lesson
 
 
 class LessonSerializer(serializers.ModelSerializer):
+    """ Сериализатор урока """
 
     class Meta:
         model = Lesson
@@ -10,6 +11,9 @@ class LessonSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
+    """ Сериализатор курса """
+
+    # Добавляем поле с числом уроков в курсе
     lesson_count = serializers.SerializerMethodField()
     lessons = LessonSerializer(many=True, read_only=True)
 
