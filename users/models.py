@@ -33,6 +33,9 @@ class User(AbstractUser):
 
 class Payment(models.Model):
     """ Оплата """
+
+    objects = models.Manager()
+
     PAYMENT_METHODS = (
         ('card', 'Карта'),
         ('cash', 'Наличные'),
