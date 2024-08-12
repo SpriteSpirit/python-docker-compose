@@ -1,6 +1,8 @@
+from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, viewsets, status
+from rest_framework import generics, viewsets, status, permissions
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -8,7 +10,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from users.filters import PaymentFilter
 from users.models import User, Payment
-from users.serializers import UserSerializer, PaymentSerializer, RegisterSerializer
+from users.permissions import IsOwnerOrReadOnly
+from users.serializers import UserSerializer, PaymentSerializer, RegisterSerializer, PublicUserSerializer, \
+    PrivateUserSerializer
 
 
 class RegisterView(APIView):
@@ -29,11 +33,11 @@ class RegisterView(APIView):
 #     serializer_class = UserSerializer
 
 
-class UserUpdateAPIView(generics.UpdateAPIView):
-    """ Редактирование профиля пользователя """
-    serializer_class = UserSerializer
-    queryset = User.objects.all()
-
+# class UserUpdateAPIView(generics.UpdateAPIView):
+#     """ Редактирование профиля пользователя """
+#     serializer_class = UserSerializer
+#     queryset = User.objects.all()
+#
 
 class UserListAPIView(generics.ListAPIView):
     """ Список всех пользователей """
@@ -50,6 +54,45 @@ class UserRetrieveAPIView(generics.RetrieveAPIView):
 class UserDestroyAPIView(generics.DestroyAPIView):
     """ Удаление пользователя """
     queryset = User.objects.all()
+
+
+class UserProfileView(generics.RetrieveUpdateAPIView):
+    """
+    Обновление профиля пользователя или просмотр профиля в зависимости от прав доступа
+    Класс предоставляет как чтение (GET), так и обновление (PUT, PATCH) объекта
+    """
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
+    def get_object(self):
+        """ Получение пользователя. Если пользователь пытается обновить чужой профиль, вызывается исключение """
+        if self.request.method in ['PUT', 'PATCH']:
+            return self.request.user
+        pk = self.kwargs.get('pk')
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise NotFound(detail="User not found")
+
+    def get_serializer_class(self):
+        """
+        Возвращает класс сериализатора в зависимости от типа запроса.
+        Если запрос является безопасным (GET, HEAD или OPTIONS), возвращается
+        PublicUserSerializer, который предоставляет общедоступную информацию о пользователе.
+        Если запрос предназначен для обновления (PUT или PATCH), возвращается
+        PrivateUserSerializer, который предоставляет полный набор полей для обновления.
+        """
+        if self.request.method in permissions.SAFE_METHODS:
+            return PublicUserSerializer
+        return PrivateUserSerializer
+
+    def perform_update(self, serializer):
+        instance = self.get_object()
+
+        if self.request.user != instance and not self.request.user.is_staff:
+            raise PermissionDenied(
+                detail="Вы не можете редактировать этот профиль")
+        serializer.save()
 
 
 class PaymentViewSet(viewsets.ModelViewSet):
