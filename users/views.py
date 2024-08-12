@@ -70,7 +70,7 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
         try:
             return User.objects.get(pk=pk)
         except User.DoesNotExist:
-            raise NotFound(detail="User not found")
+            raise NotFound(detail="Пользователь не найден")
 
     def get_serializer_class(self):
         """
