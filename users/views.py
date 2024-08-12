@@ -1,15 +1,32 @@
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, viewsets
+from rest_framework import generics, viewsets, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from users.filters import PaymentFilter
 from users.models import User, Payment
-from users.serializers import UserSerializer, PaymentSerializer
+from users.serializers import UserSerializer, PaymentSerializer, RegisterSerializer
 
 
-class UserCreateAPIView(generics.CreateAPIView):
-    """ Создание нового пользователя """
-    serializer_class = UserSerializer
+class RegisterView(APIView):
+    """ Регистрация нового пользователя """
+    serializer_class = RegisterSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# class UserCreateAPIView(generics.CreateAPIView):
+#     """ Создание нового пользователя """
+#     serializer_class = UserSerializer
 
 
 class UserUpdateAPIView(generics.UpdateAPIView):
