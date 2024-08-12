@@ -41,12 +41,14 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class PublicUserSerializer(serializers.ModelSerializer):
+    """ Публичный сериализатор """
     class Meta:
         model = User
         exclude = ('password', 'last_name',)  # исключаем чувствительные поля
 
 
 class PrivateUserSerializer(serializers.ModelSerializer):
+    """ Приватный сериализатор """
     class Meta:
         model = User
         fields = '__all__'
