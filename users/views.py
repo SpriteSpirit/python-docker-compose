@@ -5,8 +5,6 @@ from rest_framework import generics, viewsets, status, permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView
 
 from users.filters import PaymentFilter
 from users.models import User, Payment
