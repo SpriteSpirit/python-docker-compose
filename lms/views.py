@@ -1,6 +1,6 @@
 from rest_framework import viewsets, generics
 from rest_framework.exceptions import PermissionDenied
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from lms.models import Course, Lesson
 from lms.serializers import CourseSerializer, LessonSerializer
@@ -12,7 +12,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     """ API endpoint для курсов """
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
-    permission_classes = [IsAuthenticated, IsOwnerOrModerator]
+    permission_classes = [AllowAny]  # [IsAuthenticated, IsOwnerOrModerator]
 
     def get_permissions(self):
         """ Получение прав """
@@ -48,11 +48,13 @@ class CourseViewSet(viewsets.ModelViewSet):
 class LessonCreateAPIView(generics.CreateAPIView):
     """ Создание урока """
     serializer_class = LessonSerializer
-    permission_classes = [IsAuthenticated, IsNotModerator]
+    # permission_classes = [IsAuthenticated, IsNotModerator]
+    permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
         """ Создание урока с присвоением создателя-пользователя """
-        serializer.save(owner=self.request.user)
+        # serializer.save(owner=self.request.user)
+        pass
 
 
 class LessonListAPIView(generics.ListAPIView):
