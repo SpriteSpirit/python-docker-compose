@@ -1,34 +1,21 @@
+from django.core.management import call_command
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.test import APITestCase
 
-from lms.models import Course
+from lms.models import Lesson
 from lms.validators import UrlValidator
-from users.models import User
 
 
 class UrlTestCase(APITestCase):
+    """ Тестирование валидатора ссылок """
 
     def setUp(self) -> None:
-        pass
+        """ Создает экземпляры объектов для тестов """
+        call_command('loaddata', 'test_data.json')
 
     def test_valid_lesson_video_url(self):
         """ Тестирование создания валидной ссылки на видео урока """
-
-        test_user = User.objects.create(
-            email='test@example.com',
-            first_name='Test',
-            password='test',
-            is_staff=False,
-            is_superuser=False,
-            is_active=True,
-        )
-
-        Course.objects.create(
-            title='Test Course',
-            description='Test course description',
-            owner=test_user
-        )
 
         data = {
             'course': 1,
@@ -38,12 +25,7 @@ class UrlTestCase(APITestCase):
         }
 
         response = self.client.post('/lesson/create/', data=data)
-        print(response.json())
-
+        # print(response.json())
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-
-
-        # with self.assertRaises(ValidationError) as e:
-        #     UrlValidator(url=data['video_url'])
-        # self.assertEqual(str(e.exception.detail), 'Invalid URL')
+        self.assertURLEqual(url1=response.json()['video_url'], url2='https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+        self.assertContains(response, 'www.youtube.com', status_code=201)

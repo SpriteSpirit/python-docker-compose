@@ -11,9 +11,9 @@ class UrlValidator:
     def __call__(self, value: str):
         """ Проверка, что URL содержит ссылку на YouTube """
 
-        reg_ex = re.compile(r"^https?://(?:www\.)?youtube\.com/.*$")
+        # reg_ex = re.compile(r"https?://(www\.)?youtube\.com/watch\?v=[a-zA-Z0-9_-]+")
         temp_value = dict(value).get(self.url)
+        print(temp_value)
 
-        if not bool(reg_ex.match(temp_value)):
+        if 'youtube.com' not in temp_value:
             raise ValidationError('Ссылка должна быть только на youtube.com')
-        return value

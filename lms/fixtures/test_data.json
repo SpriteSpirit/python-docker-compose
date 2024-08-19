@@ -1,0 +1,23 @@
+[
+  {
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+      "email": "test@example.com",
+      "first_name": "Test",
+      "password": "test",
+      "is_staff": false,
+      "is_superuser": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "lms.course",
+    "pk": 1,
+    "fields": {
+      "title": "Test Course",
+      "description": "Test course description",
+      "owner": 1
+    }
+  }
+]
