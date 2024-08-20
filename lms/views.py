@@ -16,7 +16,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     """ ViewSet для управления CRUD операциями с курсами """
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
-    permission_classes = [AllowAny]  # [IsAuthenticated, IsOwnerOrModerator]
+    permission_classes = [IsAuthenticated, IsOwnerOrModerator]
     pagination_class = CoursePaginator
 
     def get_permissions(self):
@@ -57,12 +57,12 @@ class CourseViewSet(viewsets.ModelViewSet):
 class LessonCreateAPIView(generics.CreateAPIView):
     """ Создание урока """
     serializer_class = LessonSerializer
-    # permission_classes = [IsAuthenticated, IsNotModerator]
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsNotModerator]
+    # permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
         """ Создание урока с присвоением создателя-пользователя """
-        # serializer.save(owner=self.request.user)
+        serializer.save(owner=self.request.user)
         pass
 
 

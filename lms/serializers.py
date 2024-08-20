@@ -6,10 +6,12 @@ from lms.validators import UrlValidator
 class LessonSerializer(serializers.ModelSerializer):
     """ Сериализатор урока """
 
+    video_url = serializers.CharField(required=False, validators=[UrlValidator('video_url')])
+
     class Meta:
         model = Lesson
         fields = '__all__'
-        validators = [UrlValidator(url='video_url')]
+        # validators = [UrlValidator(url='video_url')]
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -36,6 +38,7 @@ class CourseSerializer(serializers.ModelSerializer):
         if not user.is_authenticated:
             return False
         return Subscription.objects.filter(user=user, course=instance).exists()
+
 
 class SubscriptionSerializer(serializers.ModelSerializer):
     """ Курс с подпиской """

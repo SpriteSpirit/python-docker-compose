@@ -59,7 +59,7 @@
     "fields": {
       "title": "Test Course3",
       "description": "Test course3 description",
-      "owner": 23
+      "owner": 3
     }
   },
   {
@@ -70,18 +70,20 @@
       "description": null,
       "preview": "",
       "video_url": null,
-      "course": 1
+      "course": 1,
+      "owner": 1
     }
   },
   {
     "model": "lms.lesson",
-    "pk": 1,
+    "pk": 2,
     "fields": {
       "title": "Test_lesson2",
       "description": null,
       "preview": "",
       "video_url": null,
-      "course": 2
+      "course": 2,
+      "owner": 2
     }
   },
    {
@@ -92,7 +94,8 @@
       "description": null,
       "preview": "",
       "video_url": null,
-      "course": 3
+      "course": 3,
+      "owner": 3
     }
   }
 ]

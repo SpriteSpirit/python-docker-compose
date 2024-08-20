@@ -9,7 +9,7 @@ class IsOwnerOrModerator(BasePermission):
 
 
 class IsNotModerator(BasePermission):
-    """ Позволяет доступ только для не-модераторов """
+    """ Дает доступ только для не-модераторов """
 
     def has_permission(self, request, view):
         return not request.user.groups.filter(name='Moderators').exists()
