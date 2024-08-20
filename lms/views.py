@@ -1,18 +1,23 @@
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, status
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from lms.models import Course, Lesson
-from lms.serializers import CourseSerializer, LessonSerializer
+from lms.models import Course, Lesson, Subscription
+from lms.paginators import CoursePaginator, LessonPaginator
+from lms.serializers import LessonSerializer, CourseSerializer
 from users.permissions import IsOwnerOrModerator, IsNotModerator
 
 
 # ViewSet для курса
 class CourseViewSet(viewsets.ModelViewSet):
-    """ API endpoint для курсов """
+    """ ViewSet для управления CRUD операциями с курсами """
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
     permission_classes = [AllowAny]  # [IsAuthenticated, IsOwnerOrModerator]
+    pagination_class = CoursePaginator
 
     def get_permissions(self):
         """ Получение прав """
@@ -43,6 +48,10 @@ class CourseViewSet(viewsets.ModelViewSet):
             raise PermissionDenied('Вы не можете удалить этот курс.')
         instance.delete()
 
+    def get_serializer_context(self):
+        """ Передача контекста запроса в сериализатор """
+        return {'request': self.request}
+
 
 # Generics для уроков
 class LessonCreateAPIView(generics.CreateAPIView):
@@ -62,6 +71,7 @@ class LessonListAPIView(generics.ListAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated]
+    pagination_class = LessonPaginator
 
     def get_permissions(self):
         """ Получение прав """
@@ -88,3 +98,22 @@ class LessonDestroyAPIView(generics.DestroyAPIView):
     """ Удаление урока """
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, IsNotModerator]
+
+
+class SubscriptionView(APIView):
+    """ Создание подписки пользователя """
+
+    def post(self, request):
+        user = request.user
+        course_id = request.data.get('course_id')
+        course = get_object_or_404(Course, id=course_id)
+
+        subscription, created = Subscription.objects.get_or_create(user=user, course=course)
+
+        if created:
+            message = 'Подписка добавлена'
+        else:
+            subscription.delete()
+            message = 'Подписка удалена'
+
+        return Response({"message": message}, status=status.HTTP_200_OK)

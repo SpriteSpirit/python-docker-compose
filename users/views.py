@@ -26,17 +26,6 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# class UserCreateAPIView(generics.CreateAPIView):
-#     """ Создание нового пользователя """
-#     serializer_class = UserSerializer
-
-
-# class UserUpdateAPIView(generics.UpdateAPIView):
-#     """ Редактирование профиля пользователя """
-#     serializer_class = UserSerializer
-#     queryset = User.objects.all()
-#
-
 class UserListAPIView(generics.ListAPIView):
     """ Список всех пользователей """
     serializer_class = UserSerializer
@@ -56,10 +45,9 @@ class UserDestroyAPIView(generics.DestroyAPIView):
 
 class UserProfileView(generics.RetrieveUpdateAPIView):
     """
-    Обновление профиля пользователя или просмотр профиля в зависимости от прав доступа
-    Класс предоставляет как чтение (GET), так и обновление (PUT, PATCH) объекта
+    Обновление профиля пользователя или просмотр профиля в зависимости от прав доступа.
+    Класс предоставляет как чтение (GET), так и обновление (PUT, PATCH) объекта.
     """
-    serializer_class = UserSerializer
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
 
     def get_object(self):
@@ -75,18 +63,16 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     def get_serializer_class(self):
         """
         Возвращает класс сериализатора в зависимости от типа запроса.
-        Если запрос является безопасным (GET, HEAD или OPTIONS), возвращается
-        PublicUserSerializer, который предоставляет общедоступную информацию о пользователе.
-        Если запрос предназначен для обновления (PUT или PATCH), возвращается
-        PrivateUserSerializer, который предоставляет полный набор полей для обновления.
+        Если запрос является безопасным (GET), возвращается UserSerializer,
+        который предоставляет полную информацию о пользователе, включая подписки.
+        Для обновления (PUT или PATCH) возвращается PrivateUserSerializer.
         """
         if self.request.method in permissions.SAFE_METHODS:
-            return PublicUserSerializer
+            return UserSerializer  # Используем UserSerializer для GET-запросов
         return PrivateUserSerializer
 
     def perform_update(self, serializer):
         instance = self.get_object()
-
         if self.request.user != instance and not self.request.user.is_staff:
             raise PermissionDenied(
                 detail="Вы не можете редактировать этот профиль")

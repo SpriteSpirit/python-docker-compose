@@ -1,10 +1,6 @@
 from django.core.management import call_command
 from rest_framework import status
-from rest_framework.exceptions import ValidationError
 from rest_framework.test import APITestCase
-
-from lms.models import Lesson
-from lms.validators import UrlValidator
 
 
 class UrlTestCase(APITestCase):
@@ -29,3 +25,11 @@ class UrlTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertURLEqual(url1=response.json()['video_url'], url2='https://www.youtube.com/watch?v=dQw4w9WgXcQ')
         self.assertContains(response, 'www.youtube.com', status_code=201)
+
+
+class CourseAPITestCase(APITestCase):
+    """ Тестирование API для курсов """
+
+    def setUp(self) -> None:
+        """ Создает экземпляры объектов для тестов """
+        call_command('loaddata', 'test_data.json')

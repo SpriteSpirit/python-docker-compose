@@ -1,5 +1,4 @@
 from django.db import models
-
 from config import settings
 
 # поле становится необязательным как на уровне базы данных, так и на уровне формы
@@ -41,3 +40,21 @@ class Lesson(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Subscription(models.Model):
+    """ Подписка """
+
+    objects = models.Manager()
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='subscription',
+                             on_delete=models.CASCADE, verbose_name='Пользователь')
+    course = models.ForeignKey(Course, related_name='subscription', on_delete=models.CASCADE, verbose_name='Курс')
+
+    class Meta:
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
+        unique_together = ('user', 'course')
+
+    def __str__(self):
+        return f'{self.user} - {self.course}'

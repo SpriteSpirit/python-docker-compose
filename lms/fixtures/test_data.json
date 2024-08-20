@@ -12,12 +12,87 @@
     }
   },
   {
+    "model": "users.user",
+    "pk": 2,
+    "fields": {
+      "email": "admin@example.com",
+      "first_name": "Test_admin",
+      "password": "test_admin",
+      "is_staff": false,
+      "is_superuser": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 3,
+    "fields": {
+      "email": "moderator@example.com",
+      "first_name": "Test_moderator",
+      "password": "test_moderator",
+      "is_staff": true,
+      "is_superuser": false,
+      "is_active": true
+    }
+  },
+  {
     "model": "lms.course",
     "pk": 1,
     "fields": {
-      "title": "Test Course",
-      "description": "Test course description",
+      "title": "Test Course1",
+      "description": "Test course1 description",
       "owner": 1
+    }
+  },
+  {
+    "model": "lms.course",
+    "pk": 2,
+    "fields": {
+      "title": "Test Course2",
+      "description": "Test course2 description",
+      "owner": 2
+    }
+  },
+  {
+    "model": "lms.course",
+    "pk": 3,
+    "fields": {
+      "title": "Test Course3",
+      "description": "Test course3 description",
+      "owner": 23
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 1,
+    "fields": {
+      "title": "Test_lesson1",
+      "description": null,
+      "preview": "",
+      "video_url": null,
+      "course": 1
+    }
+  },
+  {
+    "model": "lms.lesson",
+    "pk": 1,
+    "fields": {
+      "title": "Test_lesson2",
+      "description": null,
+      "preview": "",
+      "video_url": null,
+      "course": 2
+    }
+  },
+   {
+    "model": "lms.lesson",
+    "pk": 3,
+    "fields": {
+      "title": "Test_lesson2",
+      "description": null,
+      "preview": "",
+      "video_url": null,
+      "course": 3
     }
   }
 ]

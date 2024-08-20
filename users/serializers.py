@@ -1,4 +1,7 @@
 from rest_framework import serializers
+
+from lms.models import Subscription
+from lms.serializers import SubscriptionSerializer
 from users.models import User, Payment
 
 
@@ -8,16 +11,6 @@ class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = '__all__'
-
-
-class UserSerializer(serializers.ModelSerializer):
-    """ Сериализатор пользователя """
-    payments = PaymentSerializer(source='payment', many=True, read_only=True)
-
-    class Meta:
-        model = User
-        fields = '__all__'
-        extra_kwargs = {'password': {'write_only': True}}
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -40,6 +33,22 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+class UserSerializer(serializers.ModelSerializer):
+    """ Сериализатор пользователя """
+    payments = PaymentSerializer(source='payment', many=True, read_only=True)
+    subscriptions = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = '__all__'
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def get_subscriptions(self, instance):
+        subscriptions = Subscription.objects.filter(user=instance)
+        print(SubscriptionSerializer(subscriptions, many=True).data)
+        return SubscriptionSerializer(subscriptions, many=True).data
+
+
 class PublicUserSerializer(serializers.ModelSerializer):
     """ Публичный сериализатор """
     class Meta:
@@ -49,6 +58,7 @@ class PublicUserSerializer(serializers.ModelSerializer):
 
 class PrivateUserSerializer(serializers.ModelSerializer):
     """ Приватный сериализатор """
+
     class Meta:
         model = User
         fields = '__all__'
