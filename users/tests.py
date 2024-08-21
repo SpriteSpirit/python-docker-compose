@@ -5,7 +5,7 @@ from rest_framework.test import APITestCase, APIClient
 from users.models import User
 
 
-class UsersTestCase(APITestCase):
+class UserTestCase(APITestCase):
     """ Тестирование API для пользователя """
 
     def setUp(self) -> None:
