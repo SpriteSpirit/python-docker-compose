@@ -5,7 +5,7 @@ from rest_framework.test import APITestCase, APIClient
 from users.models import User
 
 
-class UserAPITestCase(APITestCase):
+class UsersTestCase(APITestCase):
     """ Тестирование API для пользователя """
 
     def setUp(self) -> None:
@@ -59,7 +59,7 @@ class UserAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()['first_name'], 'old_Test_admin')
 
-    def test_delete_course(self):
+    def test_delete_user(self):
         """ Тест удаления пользователя """
 
         response = self.client.delete(f'/users/delete/{self.user.pk}/')
