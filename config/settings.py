@@ -143,3 +143,29 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
+
+CORS_ALLOW_METHODS = (
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+)
+
+CORS_ALLOW_ALL_ORIGINS = False
+
+CORS_ALLOWED_ORIGINS = [
+    "https://example.com",
+    "https://sub.example.com",
+    "http://localhost:8080",
+    "http://127.0.0.1:9000",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://read-and-write.example.com",
+]
+
+STRIPE_API_URL = 'https://api.stripe.com'
+STRIPE_SECRET_KEY = 'sk_test_51Pqamy1UWETJ7wtWywowsVPoAko97BD5j8P1qx52gNkeNQfPb78DP66uNwOSqSdKRKgX94U7xMYSUMeXSYNLUrgx00F8ymOaD8'
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51Pqamy1UWETJ7wtWfYiAHLwN9zTyDVdyv6tsBnq2i5cQ95o4ibu3zNo6PyYQHwUknIhLvMBP8dKq5pFA28rNL29h003mY9YXp5'

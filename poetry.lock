@@ -720,6 +720,21 @@ dev = ["build", "hatch"]
 doc = ["sphinx"]
 
 [[package]]
+name = "stripe"
+version = "10.8.0"
+description = "Python bindings for the Stripe API"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "stripe-10.8.0-py2.py3-none-any.whl", hash = "sha256:cf2f4ae56bf9230e17f4e98741de919382e66f9eba8a5bcf1244ce5f4966c7c9"},
+    {file = "stripe-10.8.0.tar.gz", hash = "sha256:2b49a6a4b403209c1df98d19e8b8392ba17d841399ac82a25b5b0894c1efae5f"},
+]
+
+[package.dependencies]
+requests = {version = ">=2.20", markers = "python_version >= \"3.0\""}
+typing-extensions = {version = ">=4.5.0", markers = "python_version >= \"3.7\""}
+
+[[package]]
 name = "typing-extensions"
 version = "4.12.2"
 description = "Backported and Experimental Type Hints for Python 3.8+"
@@ -772,4 +787,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "fbeeda46e931b240249420ad0e2f6aa22508d785e8db69b8cbcda9be3b7ce384"
+content-hash = "f45d2a4ff705e0cc10c5667aa2dec8306209363d2e566237b44184c079b155a0"
