@@ -124,8 +124,6 @@ class Command(BaseCommand):
                 user=user,
                 course=course,
                 lesson=lesson,
-                amount=payment['amount'],
                 payment_date=payment['payment_date'],
-                payment_method=payment['payment_method'],
             ))
         Payment.objects.bulk_create(payments_for_create)

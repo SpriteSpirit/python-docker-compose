@@ -30,3 +30,22 @@ def create_stripe_session(price):
         mode="payment",
     )
     return session.id, session.url
+
+
+# def get_stripe_session_data(session_id):
+#     """Получает данные о сессии Stripe по идентификатору."""
+#     try:
+#         session = stripe.checkout.Session.retrieve(session_id)
+#         return session
+#     except stripe.error.InvalidRequestError as e:
+#         # Обработка ошибки, если сессия не найдена
+#         print(f"Ошибка Stripe: {e}")
+#         return None
+#
+
+def get_checkout_session_status(session_id):
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+        return session
+    except Exception as e:
+        return str(e)

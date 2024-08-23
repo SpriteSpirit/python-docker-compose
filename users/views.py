@@ -1,4 +1,8 @@
+import json
+
 from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.views.generic import TemplateView
 from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.filters import OrderingFilter
@@ -8,12 +12,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from lms.models import Course
 from users.filters import PaymentFilter
 from users.models import User, Payment
 from users.permissions import IsOwnerOrReadOnly
 from users.serializers import UserSerializer, PaymentSerializer, RegisterSerializer, \
     PrivateUserSerializer
-from users.services import create_stripe_price, create_stripe_session, create_stripe_product
+from users.services import create_stripe_price, create_stripe_session, create_stripe_product, \
+    get_checkout_session_status
 
 
 class RegisterView(APIView):
@@ -82,7 +88,7 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
         serializer.save()
 
 
-class PaymentCreateView(generics.CreateAPIView):
+class PaymentCreateAPIView(generics.CreateAPIView):
     """ Создание платежа [POST - запрос]"""
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
@@ -104,13 +110,48 @@ class PaymentCreateView(generics.CreateAPIView):
         price = create_stripe_price(product.id, serializer.validated_data['course'].price)
         # создает сессию Stripe для оплаты, используя ID товара и цену
         session_id, payment_link = create_stripe_session(price)
-        payment.session = session_id
-        print(payment)
+        payment.session_id = session_id
         payment.link = payment_link
+        print(f'session_id: {payment.session_id }')
+        print(f'payment_link: {payment.link}')
 
+        # Сохранение идентификатора купленного курса в сессию
+        self.request.session['purchased_course_id'] = serializer.validated_data['course'].id
+        print(self.request.session['purchased_course_id'])
+        self.request.session.modified = True
         payment.save()
 
         return payment
+
+
+class PaymentRetrieveAPIView(generics.RetrieveAPIView):
+    """ Проверка статуса платежа """
+
+    serializer_class = PaymentSerializer
+    queryset = Payment.objects.all()
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
+    def retrieve(self, request, *args, **kwargs):
+        # Получаем объект
+        instance = self.get_object()
+
+        # Получаем session_id из объекта
+        session_id = instance.session_id
+
+        # Проверяем статус через Stripe
+        status_message = get_checkout_session_status(session_id)
+
+        # Добавляем статус в исходные данные
+        data = self.serializer_class(instance).data
+        data['status'] = status_message
+
+        return Response(data)
+
+
+class PaymentListAPIView(generics.ListAPIView):
+    """ Список платежей пользователя [GET] """
+    serializer_class = PaymentSerializer
+    queryset = Payment.objects.all()
 
 
 class SuccessUrlView(TemplateView):
@@ -118,6 +159,19 @@ class SuccessUrlView(TemplateView):
 
     # def get_context_data(self, **kwargs):
     #     context = super().get_context_data(**kwargs)
+    #     # Получаем session_id из объекта
+    #     session = self.request.session
+    #     print(session)
     #
-    #     print(f"Context: {context}")
+    #     # Проверяем статус через Stripe
+    #     status_message = get_checkout_session_status(session)
+    #     course_id = self.request.session.get('purchased_course_id')
+    #     print(status_message)
+    #     print(course_id)
+    #     print(f"Session data in SuccessUrlView: {self.request.session.items()}")  # Логирование данных сессии
+    #     if course_id:
+    #         context['course'] = Course.objects.get(pk=course_id)
+    #
+    #         del self.request.session['purchased_course_id']
+    #         self.request.session.modified = True
     #     return context
