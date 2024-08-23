@@ -1,7 +1,7 @@
 from rest_framework import viewsets, generics, status
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -34,7 +34,6 @@ class CourseViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """ Создание курса с присвоением создателя-пользователя """
         serializer.save(owner=self.request.user)
-        print(serializer)
 
     def perform_update(self, serializer):
         """ Обновление только своего курса """
@@ -58,6 +57,7 @@ class LessonCreateAPIView(generics.CreateAPIView):
     """ Создание урока """
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticated, IsNotModerator]
+
     # permission_classes = [AllowAny]
 
     def perform_create(self, serializer):

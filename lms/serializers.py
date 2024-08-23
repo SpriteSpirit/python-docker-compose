@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from lms.models import Course, Lesson, Subscription
 from lms.validators import UrlValidator
 
@@ -31,13 +32,21 @@ class CourseSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, instance):
         """ Проверяем подписку текущего пользователя на курс """
+
         request = self.context.get('request')
+
         if request is None:
             return False
+
         user = request.user
+
         if not user.is_authenticated:
             return False
         return Subscription.objects.filter(user=user, course=instance).exists()
+
+    def get_price(self, instance):
+        """ Получение стоимости курса """
+        return instance.price
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):

@@ -1,7 +1,9 @@
+from django.core.exceptions import ObjectDoesNotExist
+from django.views.generic import TemplateView
 from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, viewsets, status, permissions
+from rest_framework import generics, status, permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -9,8 +11,9 @@ from rest_framework.views import APIView
 from users.filters import PaymentFilter
 from users.models import User, Payment
 from users.permissions import IsOwnerOrReadOnly
-from users.serializers import UserSerializer, PaymentSerializer, RegisterSerializer, PublicUserSerializer, \
+from users.serializers import UserSerializer, PaymentSerializer, RegisterSerializer, \
     PrivateUserSerializer
+from users.services import create_stripe_price, create_stripe_session, create_stripe_product
 
 
 class RegisterView(APIView):
@@ -57,7 +60,7 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
         pk = self.kwargs.get('pk')
         try:
             return User.objects.get(pk=pk)
-        except User.DoesNotExist:
+        except ObjectDoesNotExist:
             raise NotFound(detail="Пользователь не найден")
 
     def get_serializer_class(self):
@@ -79,14 +82,42 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
         serializer.save()
 
 
-class PaymentViewSet(viewsets.ModelViewSet):
-    """ Фильтрация вывода списка платежей для эндпоинта """
+class PaymentCreateView(generics.CreateAPIView):
+    """ Создание платежа [POST - запрос]"""
     serializer_class = PaymentSerializer
     queryset = Payment.objects.all()
 
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    filterset_fields = ('course', 'lesson', 'payment_method')
+    filterset_fields = ('course', 'lesson')
     filterset_class = PaymentFilter
 
     ordering_fields = ('payment_date',)
     ordering = ('payment_date',)
+
+    def perform_create(self, serializer):
+        """ Обрабатывает создание нового платежа """
+        # сохраняет новый платеж в базе данных, используя данные из запроса
+        payment = serializer.save(user=self.request.user)
+        # создает товар Stripe с именем курса, полученным из запроса
+        product = create_stripe_product(serializer.validated_data['course'].title)
+        # создает цену Stripe для товара, используя ID товара и стоимость платежа
+        price = create_stripe_price(product.id, serializer.validated_data['course'].price)
+        # создает сессию Stripe для оплаты, используя ID товара и цену
+        session_id, payment_link = create_stripe_session(price)
+        payment.session = session_id
+        print(payment)
+        payment.link = payment_link
+
+        payment.save()
+
+        return payment
+
+
+class SuccessUrlView(TemplateView):
+    template_name = "users/success_url.html"
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #
+    #     print(f"Context: {context}")
+    #     return context

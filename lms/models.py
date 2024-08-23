@@ -13,6 +13,7 @@ class Course(models.Model):
     preview = models.ImageField(upload_to='courses/preview/', verbose_name='Изображение', **NULLABLE)
     description = models.TextField(verbose_name='Описание', **NULLABLE)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='courses', **NULLABLE)
+    price = models.PositiveIntegerField(default=10000, verbose_name='Стоимость')
 
     class Meta:
         verbose_name = 'Курс'
