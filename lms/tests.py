@@ -79,7 +79,7 @@ class CourseAPITestCase(APITestCase):
         response = self.client.get('/courses/')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.json()), 4)
+        self.assertEqual(response.json()['count'], 3)
 
     def test_update_course(self):
         """ Тест изменения курса """

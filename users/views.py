@@ -12,7 +12,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from lms.models import Course
 from users.filters import PaymentFilter
 from users.models import User, Payment
 from users.permissions import IsOwnerOrReadOnly
@@ -112,12 +111,12 @@ class PaymentCreateAPIView(generics.CreateAPIView):
         session_id, payment_link = create_stripe_session(price)
         payment.session_id = session_id
         payment.link = payment_link
-        print(f'session_id: {payment.session_id }')
-        print(f'payment_link: {payment.link}')
+        # print(f'session_id: {payment.session_id }')
+        # print(f'payment_link: {payment.link}')
 
         # Сохранение идентификатора купленного курса в сессию
         self.request.session['purchased_course_id'] = serializer.validated_data['course'].id
-        print(self.request.session['purchased_course_id'])
+        # print(self.request.session['purchased_course_id'])
         self.request.session.modified = True
         payment.save()
 
