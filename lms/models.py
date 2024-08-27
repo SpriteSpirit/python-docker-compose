@@ -6,14 +6,31 @@ NULLABLE = {'null': True, 'blank': True}
 
 
 class Course(models.Model):
-    """ Курс """
+    """ Модель курса """
     objects = models.Manager()
 
-    title = models.CharField(max_length=100, verbose_name='Название курса')
-    preview = models.ImageField(upload_to='courses/preview/', verbose_name='Изображение', **NULLABLE)
-    description = models.TextField(verbose_name='Описание', **NULLABLE)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='courses', **NULLABLE)
-    price = models.PositiveIntegerField(default=10000, verbose_name='Стоимость')
+    title = models.CharField(
+        max_length=100,
+        verbose_name='Название курса'
+    )
+    preview = models.ImageField(
+        upload_to='courses/preview/',
+        verbose_name='Изображение',
+        **NULLABLE
+    )
+    description = models.TextField(
+        verbose_name='Описание',
+        **NULLABLE)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='courses',
+        **NULLABLE
+    )
+    price = models.PositiveIntegerField(
+        default=10000,
+        verbose_name='Стоимость'
+    )
 
     class Meta:
         verbose_name = 'Курс'
@@ -24,16 +41,37 @@ class Course(models.Model):
 
 
 class Lesson(models.Model):
-    """ Урок """
+    """ Модель урока """
     objects = models.Manager()
 
-    title = models.CharField(max_length=100, verbose_name='Название урока')
-    description = models.TextField(verbose_name='Описание', **NULLABLE)
-    preview = models.ImageField(upload_to='lessons/preview/', verbose_name='Изображение', **NULLABLE)
-    video_url = models.URLField(verbose_name='Ссылка на видео', **NULLABLE)
+    title = models.CharField(
+        max_length=100,
+        verbose_name='Название урока'
+    )
+    description = models.TextField(
+        verbose_name='Описание',
+        **NULLABLE
+    )
+    preview = models.ImageField(
+        upload_to='lessons/preview/',
+        verbose_name='Изображение',
+        **NULLABLE
+    )
+    video_url = models.URLField(
+        verbose_name='Ссылка на видео',
+        **NULLABLE
+    )
 
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='lessons')
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='lessons', **NULLABLE)
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='lessons'
+    )
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='lessons', **NULLABLE
+    )
 
     class Meta:
         verbose_name = 'Урок'
@@ -44,13 +82,22 @@ class Lesson(models.Model):
 
 
 class Subscription(models.Model):
-    """ Подписка """
+    """ Модель подписки """
 
     objects = models.Manager()
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='subscription',
-                             on_delete=models.CASCADE, verbose_name='Пользователь')
-    course = models.ForeignKey(Course, related_name='subscription', on_delete=models.CASCADE, verbose_name='Курс')
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='subscription',
+        on_delete=models.CASCADE,
+        verbose_name='Пользователь'
+    )
+    course = models.ForeignKey(
+        Course,
+        related_name='subscription',
+        on_delete=models.CASCADE,
+        verbose_name='Курс'
+    )
 
     class Meta:
         verbose_name = 'Подписка'
