@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "phonenumber_field",
     "django_filters",
     'drf_spectacular',
+    'django_celery_beat',
 
     'users',
     'lms',
@@ -176,7 +177,6 @@ CSRF_TRUSTED_ORIGINS = [
 STRIPE_API_URL = os.getenv('STRIPE_API_URL')
 STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
 STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
-
 
 # SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 # SESSION_SAVE_EVERY_REQUEST = True
