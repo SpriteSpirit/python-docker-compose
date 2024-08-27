@@ -181,19 +181,14 @@ STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY')
 # SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 # SESSION_SAVE_EVERY_REQUEST = True
 
-# Настройки для Celery
-
+# Celery
 # URL-адрес брокера сообщений
-CELERY_BROKER_URL = 'redis://127.0.0.1:6379'  # Например, Redis, который по умолчанию работает на порту 6379
-
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
 # URL-адрес брокера результатов, также Redis
-CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
-
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
 # Часовой пояс для работы Celery
-CELERY_TIMEZONE = "Europe/Moscow"
-
+CELERY_TIMEZONE = os.getenv('CELERY_TIMEZONE')
 # Флаг отслеживания выполнения задач
-CELERY_TASK_TRACK_STARTED = True
-
+CELERY_TASK_TRACK_STARTED = os.getenv('CELERY_TASK_TRACK_STARTED')
 # Максимальное время на выполнение задачи
 CELERY_TASK_TIME_LIMIT = 30 * 60
