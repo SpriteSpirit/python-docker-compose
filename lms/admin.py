@@ -5,7 +5,7 @@ from lms.models import Course, Lesson
 # Register your models here.
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ['title', 'description', 'preview']
+    list_display = ['title', 'description', 'preview', 'last_updated']
     list_filter = ['title']
     search_fields = ['title', 'description']
 

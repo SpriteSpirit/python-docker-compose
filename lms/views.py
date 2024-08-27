@@ -1,3 +1,6 @@
+from datetime import timedelta
+
+from django.utils import timezone
 from rest_framework import viewsets, generics, status
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
@@ -8,7 +11,7 @@ from rest_framework.views import APIView
 from lms.models import Course, Lesson, Subscription
 from lms.paginators import CoursePaginator, LessonPaginator
 from lms.serializers import LessonSerializer, CourseSerializer, SubscriptionSerializer
-from lms.tasks import send_course_update_email
+from lms.tasks import send_course_update_email, send_lesson_update_email
 from users.permissions import IsOwnerOrModerator, IsNotModerator
 
 
@@ -38,8 +41,8 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         """ Обновление только своего курса """
-        print(serializer.instance)
-        subscriptions = Subscription.objects.filter(course=serializer.instance.pk)
+        course = serializer.instance.pk
+        subscriptions = Subscription.objects.filter(course=course)
 
         if self.request.user != serializer.instance.owner:
             raise PermissionDenied('Вы не можете редактировать этот курс.')
@@ -100,6 +103,28 @@ class LessonUpdateAPIView(generics.UpdateAPIView):
     serializer_class = LessonSerializer
     queryset = Lesson.objects.all()
     permission_classes = [IsAuthenticated, IsOwnerOrModerator]
+
+    def perform_update(self, serializer):
+        lesson = serializer.instance
+        course = lesson.course
+        subscriptions = Subscription.objects.filter(course=course.pk)
+
+        if self.request.user != serializer.instance.owner:
+            raise PermissionDenied('Вы не можете редактировать этот урок.')
+
+        if timezone.now() - lesson.course.last_updated > timedelta(hours=4):
+
+            for subscription in subscriptions:
+                send_lesson_update_email(
+                    subscription.user.email,
+                    course.title,
+                    lesson.title
+                )
+            lesson.course.last_updated = timezone.now()
+            course.save()
+            serializer.save()
+        else:
+            serializer.save()
 
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
