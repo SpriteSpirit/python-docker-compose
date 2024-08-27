@@ -7,7 +7,8 @@ from rest_framework.views import APIView
 
 from lms.models import Course, Lesson, Subscription
 from lms.paginators import CoursePaginator, LessonPaginator
-from lms.serializers import LessonSerializer, CourseSerializer
+from lms.serializers import LessonSerializer, CourseSerializer, SubscriptionSerializer
+from lms.tasks import send_course_update_email
 from users.permissions import IsOwnerOrModerator, IsNotModerator
 
 
@@ -37,8 +38,15 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         """ Обновление только своего курса """
+        course = get_object_or_404(Course, owner=serializer.instance.owner)
+        subscriptions = Subscription.objects.all()
+
         if self.request.user != serializer.instance.owner:
             raise PermissionDenied('Вы не можете редактировать этот курс.')
+
+        for subscription in subscriptions:
+            if subscription.course == course:
+                send_course_update_email.delay(subscription.user.email, subscription.course.course)
         serializer.save()
 
     def perform_destroy(self, instance):
@@ -100,7 +108,7 @@ class LessonDestroyAPIView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated, IsNotModerator]
 
 
-class SubscriptionView(APIView):
+class SubscriptionCreateView(APIView):
     """ Создание подписки пользователя """
 
     def post(self, request):
@@ -117,3 +125,21 @@ class SubscriptionView(APIView):
             message = 'Подписка удалена'
 
         return Response({"message": message}, status=status.HTTP_200_OK)
+
+
+class SubscriptionListView(APIView):
+    """ Список подписок пользователя """
+
+    def get_queryset(self):
+        """ Фильтрация платежей в зависимости от роли пользователя """
+        user = self.request.user
+
+        if user.is_authenticated and (user.is_staff or user.is_superuser):
+            return Subscription.objects.all()
+        elif user.is_authenticated:
+            return Subscription.objects.filter(user=user.pk)
+
+    def get(self, request):
+        queryset = self.get_queryset()
+        serializer = SubscriptionSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
