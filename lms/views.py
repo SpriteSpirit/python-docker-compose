@@ -38,15 +38,15 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         """ Обновление только своего курса """
-        course = get_object_or_404(Course, owner=serializer.instance.owner)
-        subscriptions = Subscription.objects.all()
+        print(serializer.instance)
+        subscriptions = Subscription.objects.filter(course=serializer.instance.pk)
 
         if self.request.user != serializer.instance.owner:
             raise PermissionDenied('Вы не можете редактировать этот курс.')
 
         for subscription in subscriptions:
-            if subscription.course == course:
-                send_course_update_email.delay(subscription.user.email, subscription.course.course)
+            print(subscription)
+            send_course_update_email(subscription.user.email, subscription.course.title)
         serializer.save()
 
     def perform_destroy(self, instance):

@@ -13,4 +13,4 @@ def send_course_update_email(user_email: str, course_name: str):
         from_email=settings.EMAIL_HOST_USER,
         recipient_list=[user_email]
     )
-    print(f'Отправлено письмо пользователю {user_email} о новом курсе {course_name}')
+    print(f'Отправлено письмо пользователю {user_email} об изменении в курсе {course_name}')

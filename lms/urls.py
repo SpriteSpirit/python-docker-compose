@@ -2,7 +2,7 @@ from lms.apps import LmsConfig
 from rest_framework.routers import DefaultRouter
 from django.urls import path
 
-from lms.views import CourseViewSet, SubscriptionView, SubscriptionCreateView, SubscriptionListView
+from lms.views import CourseViewSet, SubscriptionCreateView, SubscriptionListView
 from lms.views import LessonCreateAPIView, LessonListAPIView, LessonRetrieveAPIView, \
     LessonUpdateAPIView, LessonDestroyAPIView
 
