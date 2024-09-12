@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    env_file:
+      - .env
+
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  celery:
+    build: .
+    env_file:
+      - .env
+    command: celery -A config worker --beat --scheduler django --loglevel=info
+    depends_on:
+      - db
+      - redis
+    restart: always
+
+  app:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+      - celery
+    restart: always
